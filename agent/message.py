@@ -4,12 +4,13 @@ import uuid
 import os.path
 import netifaces
 import ipaddress
+from .conf import MYID_PATH
 
 
 class Message(object):
     # uuid用于标示主机，而不是标示实例
 
-    def __init__(self, myidpath: str):
+    def __init__(self, myidpath: str = MYID_PATH):
         # id应该从文件中读取，一个agent一个id，一旦生成不可改变，除非删除myid文件
         self.id = ''
 
@@ -48,7 +49,7 @@ class Message(object):
         return {
             'id': self.id,
             'hostname': socket.gethostname(),
-            'timestamp': datetime.datetime.now(),
+            'timestamp': datetime.datetime.now().timestamp(),
             'ips': self._get_addr()
         }
 
@@ -56,10 +57,13 @@ class Message(object):
     def heartbeat(self):
         return {
             'id': self.id,
-            'hostname': socket.gethostname(),
-            'timestamp': datetime.datetime.now(),
-            'ips': self._get_addr()
+            'timestamp': datetime.datetime.now().timestamp(),
         }
 
-
-
+    def result(self, task_id, code, text):
+        return {
+            'id': self.id,
+            'task_id': task_id,
+            'code': code,
+            'output': text
+        }

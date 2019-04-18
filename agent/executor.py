@@ -15,15 +15,17 @@ class Executor(object):
         :return: 返回 tuple，（状态码,输出信息)
         """
         with tempfile.TemporaryFile() as f:  # 返回一个临时文件对象
+            logger.info(script)
             proc = subprocess.Popen(script, shell=True, stderr=f, stdout=f)
-
             try:
-                code = proc.wait(timeout=timeout)
+                code = proc.wait(int(timeout))
+                logger.info(code)
                 f.seek(0)
                 if code == 0:
                     txt = f.read()
                 else:
                     txt = f.read()
+                logger.info('<{} {}>'.format(code, txt))
                 return code, txt
             except Exception as e:
                 logger.error(e)
